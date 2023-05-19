@@ -12,14 +12,16 @@ def open_file( file,  dev,  fs, type):
     """
 
     if type == "WFDB":
-        full_record = record = wfdb.record( file)
+        full_record = record = wfdb.rdrecord(file)
         full_record_data = full_record.__dict__
         n_samples = full_record_data['sig_len']
         frequency = full_record_data["fs"]
-        print(full_record_data)
+        channels = full_record_data["sig_name"]
     elif type == "CSV":
         full_record = pd.read_csv(file)
         channels = full_record.columns()
+
+    ## Notes for future: channels can be used for selection of which one, frequency as well.
 
     try:
          ecg,  info = nk.ecg_process(full_record.to_dataframe()[ dev], sampling_rate =  fs)
@@ -28,7 +30,7 @@ def open_file( file,  dev,  fs, type):
     
     clean_data_plot = nk.ecg_plot( ecg, sampling_rate= fs)
     
-    return ecg, info, clean_data_plot, full_record, n_samples
+    return ecg, info, clean_data_plot, full_record, n_samples, channels
 
 def sampling_data(file,fs, n_samples, dev):
 
