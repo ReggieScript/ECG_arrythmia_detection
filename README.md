@@ -51,7 +51,7 @@ After successfully processing and cleaning the data, different machine learning 
 - Random forest, score: 0.625
 - K-nearest neighbors, score: 0.666
 
-Neural networks and clusters were tried but failed due to the lack of time to learn how to use them and inexperience. I believe these models and deep learning could improve the predictability.
+Neural networks and clusters were tried but failed due to the lack of time to learn how to use them and inexperience. I believe these models and deep learning could improve the predictability. For the sake of this project, logistic regression was used to predict in the long term.
 
 ## Analyzing ECG
 
