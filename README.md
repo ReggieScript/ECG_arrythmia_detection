@@ -2,7 +2,7 @@
 
 This is a machine learning project to try and detect arrythmias based off the PIB ECG database and the MIT arrythmia database. In the folder Jupyter Playground you can find the analysis of it all (it is VERY unclean, need to fix that lol).
 
-### How does it work??
+# How does it work??
 
 ## Data extraction
 
@@ -59,7 +59,7 @@ To analyze an ECG from zero, the script opens the file (wheter it is a wfdb or a
 
 **NOTE**: This is not intended to be used for diagnosis, but rather to be a tool to aid people in the medical field.
 
-# What's next?
+### What's next?
 
 - User interface.
 - Clean the jupyter data.
