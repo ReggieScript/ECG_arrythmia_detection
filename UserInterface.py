@@ -2,6 +2,10 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import ttk
+from tkinter import *
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot as plt
+from PIL import ImageTk, Image
 import main
 
 # Create the main window
@@ -19,7 +23,9 @@ subtitle_label.pack(pady=(0, 20), padx=(10, 0), anchor="w")  # Add left margin
 
 # Variable to store the selected file path
 selected_file_path = ""
-
+def update_list(self,lista_dada):
+    self['values'] = lista_dada
+    
 # Function to handle button click event for selecting a file
 def browse_file():
     global selected_file_path
@@ -27,6 +33,11 @@ def browse_file():
     selected_file_path = selected_file_path[:-4]
     if selected_file_path:
         file_label.configure(text=f"Selected File: {selected_file_path}")
+        full_record, full_record_data, n_samples, frequency, channels = main.first_step(selected_file_path)
+        derivation_list = channels
+        frequency_entry.delete(0, END) #deletes the current value
+        frequency_entry.insert(0, frequency)
+        update_list(derivation_combobox, derivation_list)
     else:
         file_label.configure(text="No file selected")
 
@@ -39,10 +50,9 @@ browse_button = tk.Button(file_frame, text="Select ECG File", command=browse_fil
 browse_button.pack(padx=(10, 0))  # Add left margin
 
 # Add a label to display the selected file
+derivation_list = [0]
 file_label = tk.Label(window, text="No file selected", font=("Roboto", 12), fg="#000000", bg="#87CEEB", anchor="center")
 file_label.pack(pady=(5, 10), padx=(10, 0))  # Add left margin and center alignment
-
-# Add a drop-down list (combobox) to select a derivation
 
 selected_number = tk.StringVar(window)
 selected_number.set(derivation_list[0])  # Set the default selected derivation
@@ -50,8 +60,10 @@ selected_number.set(derivation_list[0])  # Set the default selected derivation
 derivation_label = tk.Label(window, text="Derivation:", font=("Arial", 12), fg="#000000", bg="#87CEEB")
 derivation_label.pack(anchor="w", padx=(10, 0))  # Add left margin
 
-derivation_combobox = ttk.Combobox(window, values=derivation_list, textvariable=selected_number, font=("Arial", 12))
+derivation_combobox = ttk.Combobox(window, values=derivation_list, textvariable=selected_number, font=("Arial", 12), postcommand=update_list)
 derivation_combobox.pack(anchor="w", padx=(10, 0))  # Add left margin
+    
+# Add a drop-down list (combobox) to select a derivation
 
 # Add a field to insert the frequency
 frequency_label = tk.Label(window, text="Frequency:", font=("Arial", 12), fg="#000000", bg="#87CEEB")
@@ -66,28 +78,32 @@ blank_space_label.pack()
 
 # Function to handle button click event for initiating the ECG analysis process
 def initiate_process():
-    if selected_file_path:
-        selected_frequency = frequency_entry.get()
-        selected_derivation = selected_number.get()
+    if str(selected_number.get()) != '0':
+        if selected_file_path:
+            # Add your code
+            full_record, full_record_data, n_samples, frequency, channels = main.first_step(selected_file_path)
+            selected_frequency = frequency_entry.get()
+            selected_derivation = selected_number.get()
+            
+            # Sample data for abnormalities count, bad quality moments count, and heat map result
+            abnormalities_count = 5
+            bad_quality_count = 2
+            ecg, info, clean_data_plot, clean_data_for_plotting = main.second_step(full_record,selected_derivation,frequency)
+            image_path = "myfig.png"
+            heat_map = Image.open(image_path)
+            tk_image = ImageTk.PhotoImage(heat_map)
+            image_label = tk.Label(window, image=tk_image)
+            image_label.pack()
+            abnormalities_text.configure(text=f"Abnormalities found: {abnormalities_count}")
+            bad_quality_text.configure(text=f"Bad quality moments: {bad_quality_count}")
 
-        # Add your code
-        full_record, full_record_data, n_samples, frequency, channels = main.first_step(selected_file_path, frequency_entry.get())
-        derivation_list = channels
-        # Sample data for abnormalities count, bad quality moments count, and heat map result
-        abnormalities_count = 5
-        bad_quality_count = 2
-        heat_map_result = "Sample Heat Map"
-
-        abnormalities_text.configure(text=f"Abnormalities found: {abnormalities_count}")
-        bad_quality_text.configure(text=f"Bad quality moments: {bad_quality_count}")
-        heat_map_text.configure(text=f"Heat Map: {heat_map_result}")
-
-        # Display a message box with the analysis results
-        message = f"ECG analysis process initiated\n\nSelected file path: {selected_file_path}\nSelected frequency: {selected_frequency}\nSelected derivation: {selected_derivation}\n\nAbnormalities found: {abnormalities_count}\nBad quality moments: {bad_quality_count}\nHeat Map: {heat_map_result}"
-        messagebox.showinfo("Analysis Results", message)
+            # Display a message box with the analysis results
+            message = f"ECG analysis process initiated\n\nSelected file path: {selected_file_path}\nSelected frequency: {selected_frequency}\nSelected derivation: {selected_derivation}\n\nAbnormalities found: {abnormalities_count}\nBad quality moments: {bad_quality_count}\nHeat Map: {heat_map_result}"
+            messagebox.showinfo("Analysis Results", message)
+        else:
+            messagebox.showwarning("File Not Selected", "Please select an ECG file.")
     else:
-        messagebox.showwarning("File Not Selected", "Please select an ECG file.")
-
+        messagebox.showwarning("Derivation not selected", "Please select a derivation.")
 # Add a button to initiate the ECG analysis process
 initiate_button = tk.Button(window, text="Run!", command=initiate_process, font=("Arial", 14, "bold"), fg="#000000", bg="#FFFFFF")
 initiate_button.pack(anchor="w", padx=(10, 0), pady=(20, 0))  # Add left margin
