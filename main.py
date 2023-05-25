@@ -1,24 +1,44 @@
 import preparation
 import analysis
 
-filename = "databases\Healthy\Patient 243\s0472_re"
+def first_step(file):
 
-ecg, info, clean_data_plot, full_record, n_samples, channels = preparation.open_file(filename, "ii",1000,"WFDB")
+    """
+    With the file and frequency,returns the full_record, full_record_data, n_samples, frequency and channels
+    """
 
-print(channels, n_samples)
+    filename = file
+    full_record, full_record_data, n_samples, frequency, channels = preparation.open_file(filename)
 
-ecg_data = preparation.sampling_data(file = filename,fs=1000, n_samples=n_samples, dev="ii")
+    return full_record, full_record_data, n_samples, frequency, channels
 
-ecg_df = preparation.obtaining_values(ecg_data,1000)
+def second_step(full_record, dev, fs):
 
-clean_data_plot
+    """
+    Now with the full record, deviation and frequency, the ecg, info, clean data plot and clean data for plotting is returned.
+    """
 
-bad_quality, good_quality = preparation.quality(ecg_df)
+    ecg, info, clean_data_plot, clean_data_for_plotting = preparation.select_dev(full_record, dev, fs)
 
-final_df = preparation.big_drop_n_order(good_quality)
+    #Clean data plot te va a dar el heatmap bonito
+    # Y el Clean_data_for_plotting son los datos para poder hacer el scrollable plot
 
-print(final_df.columns)
+    return ecg, info, clean_data_plot, clean_data_for_plotting
 
-result = analysis.evaluation(final_df)
+def third_step(filename, n_samples, frequency, dev):
 
-print(result)
+    """
+    Finally, the data is analyzed and returned
+        """
+
+    ecg_data = preparation.sampling_data(file = filename,fs=frequency, n_samples=n_samples, dev=dev)
+
+    ecg_df = preparation.obtaining_values(ecg_data,1000)
+
+    bad_quality, good_quality = preparation.quality(ecg_df)
+
+    final_df = preparation.big_drop_n_order(good_quality)
+
+    result = analysis.evaluation(final_df)
+
+    return ecg_data, ecg_df, bad_quality, good_quality, final_df, result

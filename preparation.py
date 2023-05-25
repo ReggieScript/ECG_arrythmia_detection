@@ -5,32 +5,42 @@ import neurokit2 as nk
 import wfdb #library for reading ecg data https://github.com/MIT-LCP/wfdb-python/blob/main/demo.ipynb
 
 
-def open_file( file,  dev,  fs, type):
+def open_file(file):
 
     """
     Opens the ECG file depending on its type (WFDB or CSV), returns ecg, info, clean_data_plot, full_record, n_samples
     """
+    #Note to self: adaptarlo a ambos archivos, arrythmia y de 
 
-    if type == "WFDB":
-        full_record = record = wfdb.rdrecord(file)
-        full_record_data = full_record.__dict__
-        n_samples = full_record_data['sig_len']
+    full_record = record = wfdb.rdrecord(file)
+    full_record_data = full_record.__dict__
+    n_samples = full_record_data['sig_len']
+    try:
         frequency = full_record_data["fs"]
-        channels = full_record_data["sig_name"]
-    elif type == "CSV":
-        full_record = pd.read_csv(file)
-        channels = full_record.columns()
+    except:
+        frequency = 0
+    channels = full_record_data["sig_name"]
+    
+    return full_record, full_record_data, n_samples, frequency, channels
 
     ## Notes for future: channels can be used for selection of which one, frequency as well.
+
+def select_dev(full_record, dev, fs):
+
+    """
+    Now with the dev, it obtains the data from the channel
+        """
+
+    clean_data_for_plotting = ecg["ECG_Clean"]
 
     try:
          ecg,  info = nk.ecg_process(full_record.to_dataframe()[ dev], sampling_rate =  fs)
     except:
         print("error in the deviation")
     
-    clean_data_plot = nk.ecg_plot( ecg, sampling_rate= fs)
+    clean_data_plot = nk.ecg_plot(ecg, sampling_rate= fs)
     
-    return ecg, info, clean_data_plot, full_record, n_samples, channels
+    return ecg, info, clean_data_plot, clean_data_for_plotting
 
 def sampling_data(file,fs, n_samples, dev):
 
