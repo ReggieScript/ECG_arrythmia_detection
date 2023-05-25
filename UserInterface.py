@@ -94,6 +94,8 @@ def initiate_process():
             tk_image = ImageTk.PhotoImage(heat_map)
             image_label = tk.Label(window, image=tk_image)
             image_label.pack()
+            
+            
             abnormalities_text.configure(text=f"Abnormalities found: {abnormalities_count}")
             bad_quality_text.configure(text=f"Bad quality moments: {bad_quality_count}")
 

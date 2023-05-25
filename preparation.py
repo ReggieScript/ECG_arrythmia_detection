@@ -35,6 +35,7 @@ def select_dev(full_record, dev, fs):
          ecg,  info = nk.ecg_process(full_record.to_dataframe()[ dev], sampling_rate =  fs)
     except:
         print("error in the deviation")
+        
     clean_data_plot = nk.ecg_plot(ecg, sampling_rate= fs)
     fig = plt.gcf()
     fig.savefig("myfig.png")
