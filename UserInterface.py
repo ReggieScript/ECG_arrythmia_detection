@@ -6,6 +6,7 @@ from tkinter import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 from PIL import ImageTk, Image
+import pandas as pd
 import main
 
 # Create the main window
@@ -14,7 +15,7 @@ window.title("ECG Arrhythmia Detector V 1.0")
 window.configure(bg="#87CEEB")  # Set background color to sky blue
 
 # Add a label for the main title
-title_label = tk.Label(window, text="ECG Arrhythmia Detector V 1.0", font=("Roboto", 24, "bold"), fg="#000000", bg="#87CEEB", anchor="w")
+title_label = tk.Label(window, text="ECG Arrythmia Detector V 1.0", font=("Roboto", 24, "bold"), fg="#000000", bg="#87CEEB", anchor="w")
 title_label.pack(pady=20, padx=(10, 0), anchor="w")  # Add left margin
 
 # Add a label for the subtitle
@@ -86,22 +87,30 @@ def initiate_process():
             selected_derivation = selected_number.get()
             
             # Sample data for abnormalities count, bad quality moments count, and heat map result
-            abnormalities_count = 5
-            bad_quality_count = 2
             ecg, info, clean_data_plot, clean_data_for_plotting = main.second_step(full_record,selected_derivation,frequency)
+
             image_path = "myfig.png"
             heat_map = Image.open(image_path)
             tk_image = ImageTk.PhotoImage(heat_map)
             image_label = tk.Label(window, image=tk_image)
-            image_label.pack()
             
+            df = pd.DataFrame(clean_data_for_plotting)
+            df['X'] = range(len(df))
+            df['X']=df['X']/frequency
+            df.columns = ['Y','X']
+            fig = plt.figure(figsize=(6, 4), dpi=80)
+            plt.plot(df['X'], df['Y'])
+            plt.xlabel('Time(s)')
+            plt.ylabel('Amplitude')
+            plt.title('DataFrame Plot')
             
-            abnormalities_text.configure(text=f"Abnormalities found: {abnormalities_count}")
-            bad_quality_text.configure(text=f"Bad quality moments: {bad_quality_count}")
+            plt.show()
+            
+            ecg_data, ecg_df, bad_quality, good_quality, final_df, result = main.third_step(selected_file_path, n_samples, frequency, selected_derivation)
+            abnormalities_text.configure(text=f"Abnormalities found: {len(result)}")
+            bad_quality_text.configure(text=f"Bad quality segments: {len(bad_quality)}")
 
             # Display a message box with the analysis results
-            message = f"ECG analysis process initiated\n\nSelected file path: {selected_file_path}\nSelected frequency: {selected_frequency}\nSelected derivation: {selected_derivation}\n\nAbnormalities found: {abnormalities_count}\nBad quality moments: {bad_quality_count}\nHeat Map: {heat_map_result}"
-            messagebox.showinfo("Analysis Results", message)
         else:
             messagebox.showwarning("File Not Selected", "Please select an ECG file.")
     else:
