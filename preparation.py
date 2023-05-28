@@ -41,7 +41,6 @@ def select_dev(full_record, dev, fs):
     fig = plt.gcf()
     fig.canvas.manager.set_window_title("Patient Full Heat Map")
     fig.savefig("myfig.png")
-    
     clean_data_for_plotting = ecg["ECG_Clean"]
     
     return ecg, info, clean_data_plot, clean_data_for_plotting

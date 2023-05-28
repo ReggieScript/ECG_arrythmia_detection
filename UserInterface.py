@@ -6,6 +6,8 @@ from tkinter import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 from PIL import ImageTk, Image
+import matplotlib.dates as mdates
+import datetime as dt
 import pandas as pd
 import main
 import classes
@@ -25,24 +27,7 @@ subtitle_label.pack(pady=(0, 20), padx=(10, 0), anchor="w")  # Add left margin
 
 # Variable to store the selected file path
 selected_file_path = ""
-
-def final_part(clean_data_for_plotting, frequency):
-    global window
-    window.update()
-    df = pd.DataFrame(clean_data_for_plotting)
-    df['X'] = range(len(df))
-    df['X']=df['X']/frequency
-    df.columns = ['Y','X']
-    fig_graph = plt.figure(num="Full Patient ECG Data")
-    ax_graph = fig_graph.add_subplot(111)
-    ax_graph.plot(df['X'], df['Y'])
-    ax_graph.set_xlabel("Time(s)")
-    ax_graph.set_ylabel("Amplitude")
-    ax_graph.set_title("Full Patient ECG Data with bad segments")
-    ax_graph.set_xlim(xmin=0)
-    image = Image.open("myfig.png")
-    image.show(title='Full HeatMap of the Patient')
-    a = classes.ScrollableWindow(fig_graph,ax_graph)
+    
 def update_list(self,lista_dada):
     self['values'] = lista_dada
     selected_number.set(lista_dada[0])
@@ -107,15 +92,40 @@ def initiate_process():
             full_record, full_record_data, n_samples, frequency, channels = main.first_step(selected_file_path)
             selected_frequency = frequency_entry.get()
             selected_derivation = selected_number.get()
-            
             # Sample data for abnormalities count, bad quality moments count, and heat map result
             ecg, info, clean_data_plot, clean_data_for_plotting = main.second_step(full_record,selected_derivation,frequency)
-        
-
             ecg_data, ecg_df, bad_quality, good_quality, final_df, result = main.third_step(selected_file_path, n_samples, frequency, selected_derivation)
             abnormalities_text.configure(text=f"Abnormalities found: {result.count(1)}")
             bad_quality_text.configure(text=f"Bad quality segments: {len(bad_quality)}")
-            final_part(clean_data_for_plotting,frequency)
+            bad_quality_times = bad_quality.index.tolist()
+            bad_quality_times_splitted_low = []
+            bad_quality_times_splitted_high = []
+            for item in bad_quality_times:
+                lower, upper = item.split('-')
+                bad_quality_times_splitted_low.append(int(lower))
+                bad_quality_times_splitted_high.append(int(upper))
+            
+            global window
+            window.update()
+            df = pd.DataFrame(clean_data_for_plotting)
+            df['X'] = range(len(df))
+            df['X']=df['X']/frequency
+            df.columns = ['Y','X']
+            fig_graph = plt.figure(num="Full Patient ECG Data")
+            ax_graph = fig_graph.add_subplot(111)
+            ax_graph.plot(df['X'], df['Y'])
+            ax_graph.set_xlabel("Time(s)")
+            ax_graph.set_ylabel("Amplitude")
+            ax_graph.set_title("Full Patient ECG Data with bad segments")
+            ax_graph.set_xlim(xmin=0)
+            for i in range(0,len(bad_quality_times)):
+                highlight_start = bad_quality_times_splitted_low[i]/1000
+                highlight_end = bad_quality_times_splitted_high[i]/1000
+                ax_graph.axvspan(highlight_start, highlight_end, facecolor='yellow', alpha=0.3)
+
+            image = Image.open("myfig.png")
+            image.show(title='Full HeatMap of the Patient')
+            a = classes.ScrollableWindow(fig_graph,ax_graph)
             # messagebox.showinfo(title = "RESULTS", message = f"Abnormalities found: {result.count(1)} \n Bad quality segments: {len(bad_quality)}")
             # Display a message box with the analysis results
         else:
