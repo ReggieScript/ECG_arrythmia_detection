@@ -38,6 +38,7 @@ def select_dev(full_record, dev, fs):
         
     clean_data_plot = nk.ecg_plot(ecg, sampling_rate= fs)
     fig = plt.gcf()
+    fig.canvas.manager.set_window_title("Patient Full Heat Map")
     fig.savefig("myfig.png")
     clean_data_for_plotting = ecg["ECG_Clean"]
     
