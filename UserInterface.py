@@ -16,7 +16,7 @@ window.title("ECG Arrhythmia Detector V 1.0")
 window.configure(bg="#87CEEB")  # Set background color to sky blue #87CEEB
 
 # Add a label for the main title
-title_label = tk.Label(window, text="ECG Arrythmia Detector V 1.0", font=("Roboto", 24, "bold"), fg="#212431", bg="#87CEEB", anchor="w")
+title_label = tk.Label(window, text="ECG Arrhythmia Detector V 1.0", font=("Roboto", 24, "bold"), fg="#212431", bg="#87CEEB", anchor="w")
 title_label.pack(pady=20, padx=(10, 0), anchor="w")  # Add left margin
 
 # Add a label for the subtitle
@@ -25,8 +25,27 @@ subtitle_label.pack(pady=(0, 20), padx=(10, 0), anchor="w")  # Add left margin
 
 # Variable to store the selected file path
 selected_file_path = ""
+
+def final_part(clean_data_for_plotting, frequency):
+    global window
+    window.update()
+    df = pd.DataFrame(clean_data_for_plotting)
+    df['X'] = range(len(df))
+    df['X']=df['X']/frequency
+    df.columns = ['Y','X']
+    fig_graph = plt.figure(num="Full Patient ECG Data")
+    ax_graph = fig_graph.add_subplot(111)
+    ax_graph.plot(df['X'], df['Y'])
+    ax_graph.set_xlabel("Time(s)")
+    ax_graph.set_ylabel("Amplitude")
+    ax_graph.set_title("Full Patient ECG Data with bad segments")
+    ax_graph.set_xlim(xmin=0)
+    image = Image.open("myfig.png")
+    image.show(title='Full HeatMap of the Patient')
+    a = classes.ScrollableWindow(fig_graph,ax_graph)
 def update_list(self,lista_dada):
     self['values'] = lista_dada
+    selected_number.set(lista_dada[0])
     
 # Function to handle button click event for selecting a file
 def browse_file():
@@ -79,19 +98,11 @@ frequency_entry.pack(anchor="w", padx=(10, 0))  # Add left margin
 blank_space_label = tk.Label(window, text="", font=("Arial", 6), bg="#87CEEB")
 blank_space_label.pack()
 
-# Create a progressbar
-
-progressbar = ttk.Progressbar(mode = "indeterminate")
-
 # Function to handle button click event for initiating the ECG analysis process
 def initiate_process():
+    global window
     if str(selected_number.get()) != '0':
         if selected_file_path:
-
-            progressbar.pack(anchor = "e", padx = (10,10))
-
-            progressbar.start()
-
             # Add your code
             full_record, full_record_data, n_samples, frequency, channels = main.first_step(selected_file_path)
             selected_frequency = frequency_entry.get()
@@ -99,23 +110,12 @@ def initiate_process():
             
             # Sample data for abnormalities count, bad quality moments count, and heat map result
             ecg, info, clean_data_plot, clean_data_for_plotting = main.second_step(full_record,selected_derivation,frequency)
-            df = pd.DataFrame(clean_data_for_plotting)
-            df['X'] = range(len(df))
-            df['X']=df['X']/frequency
-            df.columns = ['Y','X']
-
-            fig_graph = plt.figure(num="Full Patient ECG Data")
-            ax_graph = fig_graph.add_subplot(111)
-            ax_graph.plot(df['X'], df['Y'])
-            ax_graph.set_xlabel("Time(s)")
-            ax_graph.set_ylabel("Amplitude")
-            ax_graph.set_title("Dataframe Plot")
+        
 
             ecg_data, ecg_df, bad_quality, good_quality, final_df, result = main.third_step(selected_file_path, n_samples, frequency, selected_derivation)
             abnormalities_text.configure(text=f"Abnormalities found: {result.count(1)}")
             bad_quality_text.configure(text=f"Bad quality segments: {len(bad_quality)}")
-            progressbar.stop()
-            a= classes.ScrollableWindow(fig_graph,ax_graph)
+            final_part(clean_data_for_plotting,frequency)
             # messagebox.showinfo(title = "RESULTS", message = f"Abnormalities found: {result.count(1)} \n Bad quality segments: {len(bad_quality)}")
             # Display a message box with the analysis results
         else:

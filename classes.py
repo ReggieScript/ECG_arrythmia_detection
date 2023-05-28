@@ -22,7 +22,6 @@ class ScrollableWindow(QtWidgets.QMainWindow):
         self.widget.setLayout(QtWidgets.QVBoxLayout())
         self.widget.layout().setContentsMargins(0,0,0,0)
         self.widget.layout().setSpacing(0)
-
         self.fig = fig
         self.ax = ax
         self.canvas = FigureCanvas(self.fig)
@@ -34,7 +33,6 @@ class ScrollableWindow(QtWidgets.QMainWindow):
         self.widget.layout().addWidget(self.nav)
         self.widget.layout().addWidget(self.canvas)
         self.widget.layout().addWidget(self.scroll)
-
         self.canvas.draw()
         self.show()
         self.app.exec_()
@@ -50,5 +48,4 @@ class ScrollableWindow(QtWidgets.QMainWindow):
         l1 = self.lims[0]+r*np.diff(self.lims)
         l2 = l1 +  6
         self.ax.set_xlim(l1,l2)
-        print(self.scroll.value(), l1,l2)
         self.fig.canvas.draw_idle()

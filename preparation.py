@@ -4,6 +4,7 @@ import pandas as pd
 import neurokit2 as nk
 import wfdb #library for reading ecg data https://github.com/MIT-LCP/wfdb-python/blob/main/demo.ipynb
 import matplotlib.pyplot as plt
+from PIL import Image
 
 
 def open_file(file):
@@ -40,6 +41,7 @@ def select_dev(full_record, dev, fs):
     fig = plt.gcf()
     fig.canvas.manager.set_window_title("Patient Full Heat Map")
     fig.savefig("myfig.png")
+    
     clean_data_for_plotting = ecg["ECG_Clean"]
     
     return ecg, info, clean_data_plot, clean_data_for_plotting
