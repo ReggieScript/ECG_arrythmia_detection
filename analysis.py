@@ -7,4 +7,3 @@ def evaluation(data2predict):
     loaded_model = joblib.load(filename)
     result = loaded_model.predict(data2predict).tolist()
     return result
-

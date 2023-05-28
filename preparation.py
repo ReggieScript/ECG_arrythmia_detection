@@ -145,5 +145,3 @@ def big_drop_n_order(ecg_data):
         final_df[item] = new_ecg_data[item]
 
     return final_df
-
-                    

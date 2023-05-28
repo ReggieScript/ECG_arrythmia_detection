@@ -100,11 +100,11 @@ def initiate_process():
             bad_quality_times = bad_quality.index.tolist()
             bad_quality_times_splitted_low = []
             bad_quality_times_splitted_high = []
-            for item in bad_quality_times:
-                lower, upper = item.split('-')
-                bad_quality_times_splitted_low.append(int(lower))
-                bad_quality_times_splitted_high.append(int(upper))
-            
+            if bad_quality_times:
+                for item in bad_quality_times:
+                    lower, upper = item.split('-')
+                    bad_quality_times_splitted_low.append(int(lower))
+                    bad_quality_times_splitted_high.append(int(upper))
             global window
             window.update()
             df = pd.DataFrame(clean_data_for_plotting)
@@ -118,10 +118,11 @@ def initiate_process():
             ax_graph.set_ylabel("Amplitude")
             ax_graph.set_title("Full Patient ECG Data with bad segments")
             ax_graph.set_xlim(xmin=0)
-            for i in range(0,len(bad_quality_times)):
-                highlight_start = bad_quality_times_splitted_low[i]/1000
-                highlight_end = bad_quality_times_splitted_high[i]/1000
-                ax_graph.axvspan(highlight_start, highlight_end, facecolor='yellow', alpha=0.3)
+            if bad_quality_times:
+                for i in range(0,len(bad_quality_times)):
+                    highlight_start = bad_quality_times_splitted_low[i]/1000
+                    highlight_end = bad_quality_times_splitted_high[i]/1000
+                    ax_graph.axvspan(highlight_start, highlight_end, facecolor='yellow', alpha=0.2, edgecolor='black')
 
             image = Image.open("myfig.png")
             image.show(title='Full HeatMap of the Patient')

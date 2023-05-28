@@ -49,3 +49,4 @@ class ScrollableWindow(QtWidgets.QMainWindow):
         l2 = l1 +  6
         self.ax.set_xlim(l1,l2)
         self.fig.canvas.draw_idle()
+        
