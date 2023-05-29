@@ -103,13 +103,16 @@ def initiate_process():
             abnormalities_text.configure(text=f"Abnormalities found: {result.count(1)}")
             bad_quality_text.configure(text=f"Bad quality segments: {len(bad_quality)}")
             bad_quality_times = bad_quality.index.tolist()
+
             bad_quality_times_splitted_low = []
             bad_quality_times_splitted_high = []
             good_quality_times_splitted_low = []
             good_quality_times_splitted_high = []
+
             result_dataframe = pd.DataFrame({'Times': good_quality.index.tolist(), 'Prediction': result})
             result_dataframe = result_dataframe[result_dataframe['Prediction']==1]
-            good_quality_times=result_dataframe['Times'].values.tolist()
+            
+            good_quality_times = result_dataframe['Times'].values.tolist()
             if good_quality_times:
                 for item in good_quality_times:
                     lower, upper = item.split('-')
