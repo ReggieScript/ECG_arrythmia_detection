@@ -86,19 +86,12 @@ frequency_entry.pack(anchor="w", padx=(10, 0))  # Add left margin
 blank_space_label = tk.Label(window, text="", font=("Arial", 6), bg="#87CEEB")
 blank_space_label.pack()
 
-# Create a progressbar
-
-progressbar = ttk.Progressbar(mode = "indeterminate")
-
 # Function to handle button click event for initiating the ECG analysis process
 def initiate_process():
     global window
     if str(selected_number.get()) != '0':
         if selected_file_path:
 
-            progressbar.pack(anchor = "e", padx = (10,10))
-
-            progressbar.start()
 
             # Add your code
             full_record, full_record_data, n_samples, frequency, channels = main.first_step(selected_file_path)
@@ -144,13 +137,13 @@ def initiate_process():
             ax_graph.set_xlim(xmin=0)
             if bad_quality_times:
                 for i in range(0,len(bad_quality_times)):
-                    highlight_start = bad_quality_times_splitted_low[i]/1000
-                    highlight_end = bad_quality_times_splitted_high[i]/1000
+                    highlight_start = bad_quality_times_splitted_low[i]/frequency
+                    highlight_end = bad_quality_times_splitted_high[i]/frequency
                     ax_graph.axvspan(highlight_start, highlight_end, facecolor='yellow', alpha=0.2, edgecolor='black')
             if good_quality_times:
                 for i in range(0,len(good_quality_times)):
-                    highlight_start = good_quality_times_splitted_low[i]/1000
-                    highlight_end = good_quality_times_splitted_high[i]/1000
+                    highlight_start = good_quality_times_splitted_low[i]/frequency
+                    highlight_end = good_quality_times_splitted_high[i]/frequency
                     ax_graph.axvspan(highlight_start, highlight_end, facecolor='red', alpha=0.5, edgecolor='black')
 
             image = Image.open("myfig.png")
