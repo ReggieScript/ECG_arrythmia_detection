@@ -4,6 +4,7 @@ import pandas as pd
 import neurokit2 as nk
 import wfdb #library for reading ecg data https://github.com/MIT-LCP/wfdb-python/blob/main/demo.ipynb
 import matplotlib.pyplot as plt
+from PIL import Image
 
 
 def open_file(file):
@@ -38,6 +39,7 @@ def select_dev(full_record, dev, fs):
         
     clean_data_plot = nk.ecg_plot(ecg, sampling_rate= fs)
     fig = plt.gcf()
+    fig.canvas.manager.set_window_title("Patient Full Heat Map")
     fig.savefig("myfig.png")
     clean_data_for_plotting = ecg["ECG_Clean"]
     
@@ -143,5 +145,3 @@ def big_drop_n_order(ecg_data):
         final_df[item] = new_ecg_data[item]
 
     return final_df
-
-                    
