@@ -111,7 +111,7 @@ def initiate_process():
 
             result_dataframe = pd.DataFrame({'Times': good_quality.index.tolist(), 'Prediction': result})
             result_dataframe = result_dataframe[result_dataframe['Prediction']==1]
-            
+
             good_quality_times = result_dataframe['Times'].values.tolist()
             if good_quality_times:
                 for item in good_quality_times:
@@ -138,12 +138,16 @@ def initiate_process():
             ax_graph.set_ylabel("Amplitude")
             ax_graph.set_title("Full Patient ECG Data with bad segments and possible arrhythmias")
             ax_graph.set_xlim(xmin=0)
+            
             if bad_quality_times:
+
                 for i in range(0,len(bad_quality_times)):
                     highlight_start = bad_quality_times_splitted_low[i]/frequency
                     highlight_end = bad_quality_times_splitted_high[i]/frequency
                     ax_graph.axvspan(highlight_start, highlight_end, facecolor='yellow', alpha=0.2, edgecolor='black')
+
             if good_quality_times:
+                
                 for i in range(0,len(good_quality_times)):
                     highlight_start = good_quality_times_splitted_low[i]/frequency
                     highlight_end = good_quality_times_splitted_high[i]/frequency

@@ -65,7 +65,6 @@ def sampling_data(file,fs, n_samples, dev):
     x= True
     while x == True:
         if (time+10)*fs > n_samples*fs:
-            print("hey!")
             x = False
         try:
             sample_from = time * fs
