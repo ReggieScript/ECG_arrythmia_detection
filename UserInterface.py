@@ -109,7 +109,7 @@ def initiate_process():
             good_quality_times_splitted_low = []
             good_quality_times_splitted_high = []
 
-            result_dataframe = pd.DataFrame({'Times': good_quality.index.tolist(), 'Prediction': result})
+            result_dataframe = pd.DataFrame({'Times': final_df.index.tolist(), 'Prediction': result})
             result_dataframe = result_dataframe[result_dataframe['Prediction']==1]
 
             good_quality_times = result_dataframe['Times'].values.tolist()
