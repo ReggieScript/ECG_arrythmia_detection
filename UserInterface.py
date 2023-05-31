@@ -90,11 +90,11 @@ def initiate_process():
         if selected_file_path:
             # Add your code
             full_record, full_record_data, n_samples, frequency, channels = main.first_step(selected_file_path)
-            selected_frequency = frequency_entry.get()
+            selected_frequency = int(frequency_entry.get())
             selected_derivation = selected_number.get()
             # Sample data for abnormalities count, bad quality moments count, and heat map result
-            ecg, info, clean_data_plot, clean_data_for_plotting = main.second_step(full_record,selected_derivation,frequency)
-            ecg_data, ecg_df, bad_quality, good_quality, final_df, result = main.third_step(selected_file_path, n_samples, frequency, selected_derivation)
+            ecg, info, clean_data_plot, clean_data_for_plotting = main.second_step(full_record,selected_derivation,selected_frequency)
+            ecg_data, ecg_df, bad_quality, good_quality, final_df, result = main.third_step(selected_file_path, n_samples, selected_frequency, selected_derivation)
             abnormalities_text.configure(text=f"Abnormalities found: {result.count(1)}")
             bad_quality_text.configure(text=f"Bad quality segments: {len(bad_quality)}")
             bad_quality_times = bad_quality.index.tolist()
@@ -102,6 +102,9 @@ def initiate_process():
             bad_quality_times_splitted_high = []
             good_quality_times_splitted_low = []
             good_quality_times_splitted_high = []
+            print(result)
+            print(good_quality)
+            print(bad_quality)
             result_dataframe = pd.DataFrame({'Times': good_quality.index.tolist(), 'Prediction': result})
             result_dataframe = result_dataframe[result_dataframe['Prediction']==1]
             good_quality_times=result_dataframe['Times'].values.tolist()
@@ -118,9 +121,11 @@ def initiate_process():
                     bad_quality_times_splitted_high.append(int(upper))
             global window
             window.update()
+            print(bad_quality_times_splitted_low)
+            print(bad_quality_times_splitted_high)
             df = pd.DataFrame(clean_data_for_plotting)
             df['X'] = range(len(df))
-            df['X']=df['X']/frequency
+            df['X']=df['X']/selected_frequency
             df.columns = ['Y','X']
             fig_graph = plt.figure(num="Full Patient ECG Data")
             ax_graph = fig_graph.add_subplot(111)
@@ -131,13 +136,13 @@ def initiate_process():
             ax_graph.set_xlim(xmin=0)
             if bad_quality_times:
                 for i in range(0,len(bad_quality_times)):
-                    highlight_start = bad_quality_times_splitted_low[i]/1000
-                    highlight_end = bad_quality_times_splitted_high[i]/1000
+                    highlight_start = bad_quality_times_splitted_low[i]/selected_frequency
+                    highlight_end = bad_quality_times_splitted_high[i]/selected_frequency
                     ax_graph.axvspan(highlight_start, highlight_end, facecolor='yellow', alpha=0.2, edgecolor='black')
             if good_quality_times:
                 for i in range(0,len(good_quality_times)):
-                    highlight_start = good_quality_times_splitted_low[i]/1000
-                    highlight_end = good_quality_times_splitted_high[i]/1000
+                    highlight_start = good_quality_times_splitted_low[i]/selected_frequency
+                    highlight_end = good_quality_times_splitted_high[i]/selected_frequency
                     ax_graph.axvspan(highlight_start, highlight_end, facecolor='red', alpha=0.5, edgecolor='black')
 
             image = Image.open("myfig.png")
