@@ -180,13 +180,18 @@ def display_instructions():
     instructions_window = Toplevel(window)
 
     # Set the title of the new window
-    instructions_window.title("Instructions")
+    instructions_window.title("How To Use")
+    instructions_window.geometry('400x200')
 
     # Create a label with the instructions text
-    instructions_label = Label(instructions_window, text="Here are the instructions for use.")
-    instructions_label.pack()
+    instructions_text = tk.Text(instructions_window, width=50)  # Set the width to the desired value
+    instructions_text.pack(fill=tk.BOTH, expand=True)
+    instructions = """
+Instructions of use.\n\n1.Click the Select ECG file and select the .dat file.\n2.Select the derivation you want to observe (Results \ntend to be more visible in 2nd derivation).\n3.You can use the predetermined frequency or change it \nat will.\n4.Click the 'Run!' Button.\n5. Show the results to a healthcare professional.
+    """
+    instructions_text.insert(tk.END, instructions)
     
-instructions_btn = Button(window, text="Instructions", command=display_instructions)
+instructions_btn = Button(window, text="Instructions of Use", command=display_instructions)
 instructions_btn.pack(pady=10)
 
 
