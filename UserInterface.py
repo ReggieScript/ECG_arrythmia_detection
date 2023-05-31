@@ -20,14 +20,26 @@ window.title("ECG Arrhythmia Detector V 1.0")
 window.configure(bg="#87CEEB")  # Set background color to sky blue #87CEEB
 
 # Add a label for the main title
+# Create a custom title bar using the ttk module
+title_bar = tk.Canvas(window, height=30, bg="#87CEEB", highlightthickness=0)  # Set the desired background color
+title_bar.pack(fill="x")
 
-title_label = tk.Label(window, text="ECG Arrhythmia Detector V 1.0", font=("Roboto", 24, "bold"), fg="#212431", bg="#87CEEB", anchor="w")
+original_image = Image.open("Visuals/logo.png")
 
-title_label.pack(pady=20, padx=(10, 0), anchor="w")  # Add left margin
+# Resize the image
+width, height = 170, 170  # Set the desired width and height
+resized_image = original_image.resize((width, height), Image.ANTIALIAS)
+# Load the image for the title
+title_image = ImageTk.PhotoImage(resized_image)
+
+# Create a label widget to display the image
+title_label = ttk.Label(title_bar, image=title_image, background="#87CEEB")
+title_label.pack(side="left",  padx=400, pady=0)
+  # Add left margin
 
 # Add a label for the subtitle
 subtitle_label = tk.Label(window, text="Designed by Regina Crespo, Miguel Gaona, Ivan Garza and Lizeth Ramirez", font=("Roboto", 12, "italic"), fg="#212431", bg="#87CEEB", anchor="w")
-subtitle_label.pack(pady=(0, 20), padx=(10, 0), anchor="w")  # Add left margin
+subtitle_label.pack(pady=(0, 20), padx=(10, 0), anchor="center")  # Add left margin
 
 # Variable to store the selected file path
 selected_file_path = ""
@@ -136,7 +148,7 @@ def initiate_process():
             ax_graph = fig_graph.add_subplot(111)
             ax_graph.plot(df['X'], df['Y'])
             ax_graph.set_xlabel("Time(s)")
-            ax_graph.set_ylabel("Amplitude")
+            ax_graph.set_ylabel("Amplitude(mV)")
             ax_graph.set_title("Full Patient ECG Data with bad segments and possible arrhythmias")
             # ax_graph.set_xlim(xmin=0)
             
@@ -181,19 +193,23 @@ def display_instructions():
 
     # Set the title of the new window
     instructions_window.title("How To Use")
-    instructions_window.geometry('400x200')
+    instructions_window.geometry('440x230')
+    canvas = tk.Canvas(instructions_window, bg="#87CEEB")  # Set the desired background color
+    canvas.pack(fill=tk.BOTH, expand=True)
 
     # Create a label with the instructions text
-    instructions_text = tk.Text(instructions_window, width=50)  # Set the width to the desired value
-    instructions_text.pack(fill=tk.BOTH, expand=True)
+    instructions_text = tk.Text(canvas, width=50,background="#87CEEB", highlightthickness=0, border=0,borderwidth=0)  # Set the width to the desired value
     instructions = """
-Instructions of use.\n\n1.Click the Select ECG file and select the .dat file.\n2.Select the derivation you want to observe (Results \ntend to be more visible in 2nd derivation).\n3.You can use the predetermined frequency or change it \nat will.\n4.Click the 'Run!' Button.\n5. Show the results to a healthcare professional.
+Instructions of use\n\n1.Click the Select ECG file and select the .dat file.\n2.Select the derivation you want to observe (Results tend to be more visible in 2nd derivation).\n3.You can use the predetermined frequency or change it at will.\n4.Click the 'Run!' Button.\n5. Show the results to a healthcare professional.
     """
     instructions_text.insert(tk.END, instructions)
-    
-instructions_btn = Button(window, text="Instructions of Use", command=display_instructions)
-instructions_btn.pack(pady=10)
+    instructions_text.configure(font=("Roboto", 13))
+    instructions_text.pack(padx=10, pady=10)
 
+    
+instr_button = PhotoImage(file = r"Visuals\button_instructions.png")
+instructions_btn = Button(window, image=instr_button, text="Instructions", command=display_instructions, highlightthickness=0, bd = 0, border= 0, bg = "#87CEEB")
+instructions_btn.pack(padx=10,pady=10, anchor='w')
 
 # Add a label for the abnormalities count
 abnormalities_text = tk.Label(window, text="", font=("Roboto", 14), fg="#212431", bg="#87CEEB")
