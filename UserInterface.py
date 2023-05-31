@@ -137,7 +137,7 @@ def initiate_process():
             ax_graph.set_xlabel("Time(s)")
             ax_graph.set_ylabel("Amplitude")
             ax_graph.set_title("Full Patient ECG Data with bad segments and possible arrhythmias")
-            ax_graph.set_xlim(xmin=0)
+            # ax_graph.set_xlim(xmin=0)
             
             if bad_quality_times:
 
