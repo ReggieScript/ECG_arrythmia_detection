@@ -46,7 +46,7 @@ class ScrollableWindow(QtWidgets.QMainWindow):
     def update(self, evt=None):
         r = self.scroll.value()/((1+self.step)*100)
         l1 = self.lims[0]+r*np.diff(self.lims)
-        l2 = l1 +  6
+        l2 = l1 +  np.diff(self.lims)*self.step
         self.ax.set_xlim(l1,l2)
         self.fig.canvas.draw_idle()
         

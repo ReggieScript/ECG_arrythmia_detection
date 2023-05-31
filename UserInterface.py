@@ -86,19 +86,12 @@ frequency_entry.pack(anchor="w", padx=(10, 0))  # Add left margin
 blank_space_label = tk.Label(window, text="", font=("Arial", 6), bg="#87CEEB")
 blank_space_label.pack()
 
-# Create a progressbar
-
-progressbar = ttk.Progressbar(mode = "indeterminate")
-
 # Function to handle button click event for initiating the ECG analysis process
 def initiate_process():
     global window
     if str(selected_number.get()) != '0':
         if selected_file_path:
 
-            progressbar.pack(anchor = "e", padx = (10,10))
-
-            progressbar.start()
 
             # Add your code
             full_record, full_record_data, n_samples, frequency, channels = main.first_step(selected_file_path)
@@ -110,16 +103,23 @@ def initiate_process():
             abnormalities_text.configure(text=f"Abnormalities found: {result.count(1)}")
             bad_quality_text.configure(text=f"Bad quality segments: {len(bad_quality)}")
             bad_quality_times = bad_quality.index.tolist()
+
             bad_quality_times_splitted_low = []
             bad_quality_times_splitted_high = []
             good_quality_times_splitted_low = []
             good_quality_times_splitted_high = []
+<<<<<<< HEAD
             print(result)
             print(good_quality)
             print(bad_quality)
             result_dataframe = pd.DataFrame({'Times': good_quality.index.tolist(), 'Prediction': result})
+=======
+
+            result_dataframe = pd.DataFrame({'Times': final_df.index.tolist(), 'Prediction': result})
+>>>>>>> master
             result_dataframe = result_dataframe[result_dataframe['Prediction']==1]
-            good_quality_times=result_dataframe['Times'].values.tolist()
+
+            good_quality_times = result_dataframe['Times'].values.tolist()
             if good_quality_times:
                 for item in good_quality_times:
                     lower, upper = item.split('-')
@@ -146,16 +146,30 @@ def initiate_process():
             ax_graph.set_xlabel("Time(s)")
             ax_graph.set_ylabel("Amplitude")
             ax_graph.set_title("Full Patient ECG Data with bad segments and possible arrhythmias")
-            ax_graph.set_xlim(xmin=0)
+            # ax_graph.set_xlim(xmin=0)
+            
             if bad_quality_times:
+
                 for i in range(0,len(bad_quality_times)):
+<<<<<<< HEAD
                     highlight_start = bad_quality_times_splitted_low[i]/selected_frequency
                     highlight_end = bad_quality_times_splitted_high[i]/selected_frequency
+=======
+                    highlight_start = bad_quality_times_splitted_low[i]/frequency
+                    highlight_end = bad_quality_times_splitted_high[i]/frequency
+>>>>>>> master
                     ax_graph.axvspan(highlight_start, highlight_end, facecolor='yellow', alpha=0.2, edgecolor='black')
+
             if good_quality_times:
+                
                 for i in range(0,len(good_quality_times)):
+<<<<<<< HEAD
                     highlight_start = good_quality_times_splitted_low[i]/selected_frequency
                     highlight_end = good_quality_times_splitted_high[i]/selected_frequency
+=======
+                    highlight_start = good_quality_times_splitted_low[i]/frequency
+                    highlight_end = good_quality_times_splitted_high[i]/frequency
+>>>>>>> master
                     ax_graph.axvspan(highlight_start, highlight_end, facecolor='red', alpha=0.5, edgecolor='black')
 
             image = Image.open("myfig.png")
