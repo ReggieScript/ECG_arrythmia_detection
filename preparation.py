@@ -111,6 +111,7 @@ def obtaining_values(ecg_data, fs):
     data_df["ratio s/r peaks"] = data_df["ECG_S_Peaks"].div(data_df["ECG_R_Peaks"])
     data_df["ratio t/r peaks"] = data_df["ECG_T_Peaks"].div(data_df["ECG_R_Peaks"])
 
+    print(data_df['mean_quality'])
     return data_df
 
 def quality(ecg_data):
@@ -119,8 +120,8 @@ def quality(ecg_data):
     looks for good and bad quality samples, returns a bad quality and a good quality dataframe
     """
 
-    bad_quality = ecg_data[ecg_data["mean_quality"]<0.5]
-    good_quality = ecg_data[ecg_data["mean_quality"]>0.5]
+    bad_quality = ecg_data[ecg_data["mean_quality"]<0.50]
+    good_quality = ecg_data[ecg_data["mean_quality"]>0.50]
 
     return bad_quality, good_quality
 

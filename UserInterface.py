@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import Tk, Button, Toplevel, Label
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import ttk
@@ -9,6 +10,7 @@ from PIL import ImageTk, Image
 import matplotlib.dates as mdates
 import datetime as dt
 import pandas as pd
+import matplotlib.patches as patches
 import main
 import classes
 
@@ -91,15 +93,13 @@ def initiate_process():
     global window
     if str(selected_number.get()) != '0':
         if selected_file_path:
-
-
             # Add your code
             full_record, full_record_data, n_samples, frequency, channels = main.first_step(selected_file_path)
-            selected_frequency = frequency_entry.get()
+            selected_frequency = int(frequency_entry.get())
             selected_derivation = selected_number.get()
             # Sample data for abnormalities count, bad quality moments count, and heat map result
-            ecg, info, clean_data_plot, clean_data_for_plotting = main.second_step(full_record,selected_derivation,frequency)
-            ecg_data, ecg_df, bad_quality, good_quality, final_df, result = main.third_step(selected_file_path, n_samples, frequency, selected_derivation)
+            ecg, info, clean_data_plot, clean_data_for_plotting = main.second_step(full_record,selected_derivation,selected_frequency)
+            ecg_data, ecg_df, bad_quality, good_quality, final_df, result = main.third_step(selected_file_path, n_samples, selected_frequency, selected_derivation)
             abnormalities_text.configure(text=f"Abnormalities found: {result.count(1)}")
             bad_quality_text.configure(text=f"Bad quality segments: {len(bad_quality)}")
             bad_quality_times = bad_quality.index.tolist()
@@ -126,11 +126,12 @@ def initiate_process():
                     bad_quality_times_splitted_high.append(int(upper))
             global window
             window.update()
+            print(bad_quality_times_splitted_low)
+            print(bad_quality_times_splitted_high)
             df = pd.DataFrame(clean_data_for_plotting)
             df['X'] = range(len(df))
-            df['X']=df['X']/frequency
+            df['X']=df['X']/selected_frequency
             df.columns = ['Y','X']
-
             fig_graph = plt.figure(num="Full Patient ECG Data")
             ax_graph = fig_graph.add_subplot(111)
             ax_graph.plot(df['X'], df['Y'])
@@ -155,6 +156,11 @@ def initiate_process():
 
             image = Image.open("myfig.png")
             image.show(title='Full HeatMap of the Patient')
+            legend_entries = [
+                patches.Patch(facecolor='red', alpha=0.5, label='Possible Arrhythmia'),
+                patches.Patch(facecolor='yellow', alpha=0.2, label='Bad Quality Segment')
+            ]
+            ax_graph.legend(handles=legend_entries, loc='upper right')
             a = classes.ScrollableWindow(fig_graph,ax_graph)
 
             # messagebox.showinfo(title = "RESULTS", message = f"Abnormalities found: {result.count(1)} \n Bad quality segments: {len(bad_quality)}")
@@ -168,6 +174,25 @@ def initiate_process():
 run_btn = PhotoImage(file = r"Visuals/button_run.png")
 initiate_button = tk.Button(window, image = run_btn, command=initiate_process, highlightthickness=0, bd = 0, border= 0, bg = "#87CEEB")
 initiate_button.pack(anchor="w", padx=(10, 0), pady=(20, 0))  # Add left margin
+
+def display_instructions():
+    # Create a new window
+    instructions_window = Toplevel(window)
+
+    # Set the title of the new window
+    instructions_window.title("How To Use")
+    instructions_window.geometry('400x200')
+
+    # Create a label with the instructions text
+    instructions_text = tk.Text(instructions_window, width=50)  # Set the width to the desired value
+    instructions_text.pack(fill=tk.BOTH, expand=True)
+    instructions = """
+Instructions of use.\n\n1.Click the Select ECG file and select the .dat file.\n2.Select the derivation you want to observe (Results \ntend to be more visible in 2nd derivation).\n3.You can use the predetermined frequency or change it \nat will.\n4.Click the 'Run!' Button.\n5. Show the results to a healthcare professional.
+    """
+    instructions_text.insert(tk.END, instructions)
+    
+instructions_btn = Button(window, text="Instructions of Use", command=display_instructions)
+instructions_btn.pack(pady=10)
 
 
 # Add a label for the abnormalities count
