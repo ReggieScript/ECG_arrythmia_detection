@@ -18,7 +18,9 @@ window.title("ECG Arrhythmia Detector V 1.0")
 window.configure(bg="#87CEEB")  # Set background color to sky blue #87CEEB
 
 # Add a label for the main title
+
 title_label = tk.Label(window, text="ECG Arrhythmia Detector V 1.0", font=("Roboto", 24, "bold"), fg="#212431", bg="#87CEEB", anchor="w")
+
 title_label.pack(pady=20, padx=(10, 0), anchor="w")  # Add left margin
 
 # Add a label for the subtitle
@@ -53,6 +55,7 @@ file_frame.pack(pady=10)
 
 # Add a button to select a file
 file_btn = PhotoImage(file = r"Visuals/button_select-ecg-file.png")
+
 browse_button = tk.Button(file_frame, image= file_btn, command=browse_file, font=("Arial", 12), bg="#87CEEB", highlightthickness=0, bd =0, border=0, borderwidth=0)
 browse_button.pack(padx=(10, 0))  # Add left margin
 
@@ -83,11 +86,20 @@ frequency_entry.pack(anchor="w", padx=(10, 0))  # Add left margin
 blank_space_label = tk.Label(window, text="", font=("Arial", 6), bg="#87CEEB")
 blank_space_label.pack()
 
+# Create a progressbar
+
+progressbar = ttk.Progressbar(mode = "indeterminate")
+
 # Function to handle button click event for initiating the ECG analysis process
 def initiate_process():
     global window
     if str(selected_number.get()) != '0':
         if selected_file_path:
+
+            progressbar.pack(anchor = "e", padx = (10,10))
+
+            progressbar.start()
+
             # Add your code
             full_record, full_record_data, n_samples, frequency, channels = main.first_step(selected_file_path)
             selected_frequency = int(frequency_entry.get())
@@ -127,6 +139,7 @@ def initiate_process():
             df['X'] = range(len(df))
             df['X']=df['X']/selected_frequency
             df.columns = ['Y','X']
+
             fig_graph = plt.figure(num="Full Patient ECG Data")
             ax_graph = fig_graph.add_subplot(111)
             ax_graph.plot(df['X'], df['Y'])
@@ -148,6 +161,7 @@ def initiate_process():
             image = Image.open("myfig.png")
             image.show(title='Full HeatMap of the Patient')
             a = classes.ScrollableWindow(fig_graph,ax_graph)
+
             # messagebox.showinfo(title = "RESULTS", message = f"Abnormalities found: {result.count(1)} \n Bad quality segments: {len(bad_quality)}")
             # Display a message box with the analysis results
         else:
@@ -155,9 +169,11 @@ def initiate_process():
     else:
         messagebox.showwarning("Derivation not selected", "Please select a derivation.")
 # Add a button to initiate the ECG analysis process
+
 run_btn = PhotoImage(file = r"Visuals/button_run.png")
 initiate_button = tk.Button(window, image = run_btn, command=initiate_process, highlightthickness=0, bd = 0, border= 0, bg = "#87CEEB")
 initiate_button.pack(anchor="w", padx=(10, 0), pady=(20, 0))  # Add left margin
+
 
 # Add a label for the abnormalities count
 abnormalities_text = tk.Label(window, text="", font=("Roboto", 14), fg="#212431", bg="#87CEEB")
